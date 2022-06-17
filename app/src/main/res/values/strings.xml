@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Roll &amp; Dice</string>
     <string name="roll_dice_placeholder">Roll Dice</string>
+    <string name="player_one">Player 1</string>
+    <string name="score_placeholder">Score: %1$s</string>
+    <string name="player_two">Player 2</string>
 </resources>
