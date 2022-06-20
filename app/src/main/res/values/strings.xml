@@ -4,4 +4,7 @@
     <string name="player_one">Player 1</string>
     <string name="score_placeholder">Score: %1$s</string>
     <string name="player_two">Player 2</string>
+    <string name="rounds_left">Rounds left: %1$s</string>
+    <string name="play_again">Play again!</string>
+    <string name="tap_the_dice_to_start">Tap the dice to start!</string>
 </resources>
