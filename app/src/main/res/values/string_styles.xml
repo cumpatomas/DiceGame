@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Title_One">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/black</item>
-    </style>
-
-    <style name="Title_Two">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/black</item>
-    </style>
+    <string name="app_name">Roll &amp; Dice</string>
+    <string name="roll_dice_placeholder">Roll Dice</string>
+    <string name="player_one">Player 1</string>
+    <string name="score_placeholder">Score: %1$s</string>
+    <string name="player_two">Player 2</string>
+    <string name="rounds_left">Rounds left: %1$s</string>
+    <string name="play_again">Play again!</string>
+    <string name="tap_the_dice_to_start">Tap the dice to start!</string>
 </resources>

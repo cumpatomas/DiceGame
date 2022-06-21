@@ -5,8 +5,16 @@ import android.os.Bundle
 import androidx.appcompat.content.res.AppCompatResources
 import com.cumpatomas.dicegame.databinding.ActivityMainBinding
 
+private const val TAG = "MainActivity.kt"
+
 class MainActivity : AppCompatActivity() {
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
+    private var playerTurn = 0
+    private var playerOneScore = 0
+    private var playerTwoScore = 0
+    private var rounds = 5
+    private var randomNumber = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
