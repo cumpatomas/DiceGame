@@ -1,22 +1,14 @@
 package com.cumpatomas.rolldice
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.view.isGone
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.airbnb.lottie.LottieAnimationView
 import com.cumpatomas.rolldice.databinding.ActivityMainBinding
-import kotlin.math.round
-import kotlin.random.Random
 
 private const val TAG = "MainActivity.kt"
 class MainActivity : AppCompatActivity() {
@@ -25,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     private var playerTurn = 0
     private var playerOneScore = 0
     private var playerTwoScore = 0
-    private var rounds = 5
+    private var rounds = 6
     private var randomNumber = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,11 +50,16 @@ class MainActivity : AppCompatActivity() {
                 playerTurn = 1
                 binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
                 binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
+                binding.tvPlayer1Turn.isVisible = true
+                binding.tvPlayer2Turn.isGone = true
+
             }
             2 -> {
                 playerTurn = 2
                 binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
                 binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
+                binding.tvPlayer2Turn.isVisible = true
+                binding.tvPlayer1Turn.isGone = true
             }
         }
     }
@@ -83,8 +80,10 @@ class MainActivity : AppCompatActivity() {
         binding.ivWinnerPlayerOne.isGone = true
         binding.btnRestart.isGone = true
         binding.ivDice.isVisible = true
+        binding.tvIntro.text = "Tap the dice to start!"
         binding.tvIntro.isVisible = true
         binding.confetti.isGone = true
+
     }
 
     private fun rollDice() {
@@ -143,11 +142,15 @@ class MainActivity : AppCompatActivity() {
                 binding.ivWinnerPlayerOne.isVisible = true
                 binding.ivWinnerPlayerOne.winnerAnimation()
                 binding.confetti.confettiAnimation()
+                binding.tvIntro.text = "PLAYER 1 WINS!"
+                binding.tvIntro.isVisible = true
             }
             if (playerTwoScore > playerOneScore) {
                 binding.ivWinnerPlayerTwo.isVisible = true
                 binding.ivWinnerPlayerTwo.winnerAnimation()
                 binding.confetti.confettiAnimation()
+                binding.tvIntro.text = "PLAYER 2 WINS!"
+                binding.tvIntro.isVisible = true
             }
             if (playerOneScore == playerTwoScore) {
                 binding.ivWinnerPlayerOne.isVisible = true
@@ -155,9 +158,12 @@ class MainActivity : AppCompatActivity() {
                 binding.ivWinnerPlayerOne.winnerAnimation()
                 binding.ivWinnerPlayerTwo.winnerAnimation()
                 binding.confetti.confettiAnimation()
+                binding.tvIntro.text = "DRAW!"
+                binding.tvIntro.isVisible = true
             }
             binding.ivDice.isGone = true
             binding.btnRestart.isVisible = true
+
         }
     }
 
@@ -173,10 +179,17 @@ class MainActivity : AppCompatActivity() {
             playerTurn = 2
             binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
             binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
+            binding.tvPlayer2Turn.isVisible = true
+            binding.tvPlayer1Turn.isGone = true
+
+
         } else {
             playerTurn = 1
             binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
             binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
+            binding.tvPlayer1Turn.isVisible = true
+            binding.tvPlayer2Turn.isGone = true
+
         }
     }
 
@@ -206,6 +219,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun LottieAnimationView.confettiAnimation() {
+        binding.tvPlayer1Turn.isGone = true
+        binding.tvPlayer2Turn.isGone = true
         isVisible = true
         bringToFront()
         setAnimation(R.raw.confetti)

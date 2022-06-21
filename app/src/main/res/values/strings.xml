@@ -7,4 +7,8 @@
     <string name="rounds_left">Rounds left: %1$s</string>
     <string name="play_again">Play again!</string>
     <string name="tap_the_dice_to_start">Tap the dice to start!</string>
+    <string name="turnText">Your Turn!</string> />
+    <string name="player1wins">PLAYER 1 WINS!</string> />
+    <string name="player2wins">PLAYER 2 WINS!</string> />
+    <string name="draw">DRAW!</string> />
 </resources>
