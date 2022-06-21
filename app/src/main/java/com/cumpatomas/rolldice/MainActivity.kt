@@ -1,7 +1,9 @@
 package com.cumpatomas.rolldice
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -30,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         assignFirstPlayerTurn()
         setInitialScores()
         setInitialRounds()
-
     }
 
     private fun setInitialRounds() {
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         binding.ivWinnerPlayerOne.isGone = true
         binding.btnRestart.isGone = true
         binding.ivDice.isVisible = true
-        binding.tvIntro.text = "Tap the dice to start!"
+        binding.tvIntro.text = resources.getString(R.string.tap_the_dice_to_start)
         binding.tvIntro.isVisible = true
         binding.confetti.isGone = true
 
@@ -142,14 +143,14 @@ class MainActivity : AppCompatActivity() {
                 binding.ivWinnerPlayerOne.isVisible = true
                 binding.ivWinnerPlayerOne.winnerAnimation()
                 binding.confetti.confettiAnimation()
-                binding.tvIntro.text = "PLAYER 1 WINS!"
+                binding.tvIntro.text = resources.getString(R.string.player1wins)
                 binding.tvIntro.isVisible = true
             }
             if (playerTwoScore > playerOneScore) {
                 binding.ivWinnerPlayerTwo.isVisible = true
                 binding.ivWinnerPlayerTwo.winnerAnimation()
                 binding.confetti.confettiAnimation()
-                binding.tvIntro.text = "PLAYER 2 WINS!"
+                binding.tvIntro.text = resources.getString(R.string.player2wins)
                 binding.tvIntro.isVisible = true
             }
             if (playerOneScore == playerTwoScore) {
@@ -158,12 +159,11 @@ class MainActivity : AppCompatActivity() {
                 binding.ivWinnerPlayerOne.winnerAnimation()
                 binding.ivWinnerPlayerTwo.winnerAnimation()
                 binding.confetti.confettiAnimation()
-                binding.tvIntro.text = "DRAW!"
+                binding.tvIntro.text = resources.getString(R.string.draw)
                 binding.tvIntro.isVisible = true
             }
             binding.ivDice.isGone = true
             binding.btnRestart.isVisible = true
-
         }
     }
 
@@ -181,15 +181,12 @@ class MainActivity : AppCompatActivity() {
             binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
             binding.tvPlayer2Turn.isVisible = true
             binding.tvPlayer1Turn.isGone = true
-
-
         } else {
             playerTurn = 1
             binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
             binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
             binding.tvPlayer1Turn.isVisible = true
             binding.tvPlayer2Turn.isGone = true
-
         }
     }
 
