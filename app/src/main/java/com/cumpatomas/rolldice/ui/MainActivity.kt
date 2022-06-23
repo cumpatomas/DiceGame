@@ -1,20 +1,24 @@
-package com.cumpatomas.rolldice
+package com.cumpatomas.rolldice.ui
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
-import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.airbnb.lottie.LottieAnimationView
+import com.cumpatomas.rolldice.R
 import com.cumpatomas.rolldice.databinding.ActivityMainBinding
+import com.cumpatomas.rolldice.ui.viewmodel.MainActivityViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity.kt"
 class MainActivity : AppCompatActivity() {
 
+    private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private var playerTurn = 0
     private var playerOneScore = 0
@@ -29,9 +33,18 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         setDefaultImage()
         initListeners()
-        assignFirstPlayerTurn()
+        initObservers()
         setInitialScores()
         setInitialRounds()
+
+    }
+
+    private fun initObservers() {
+        lifecycleScope.launch {
+            viewModel.firstPlayerTurn.collectLatest { turn ->
+                assignFirstPlayerTurn(turn)
+            }
+        }
     }
 
     private fun setInitialRounds() {
@@ -43,10 +56,8 @@ class MainActivity : AppCompatActivity() {
         binding.tvScorePlayerTwo.text = resources.getString(R.string.score_placeholder, playerTwoScore.toString())
     }
 
-    private fun assignFirstPlayerTurn() {
-        val r = (1 .. 2).shuffled().random()
-        Log.d(TAG, r.toString())
-        when(r) {
+    private fun assignFirstPlayerTurn(turn: Int) {
+        when(turn) {
             1 -> {
                 playerTurn = 1
                 binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
@@ -71,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun restartGame() {
-        assignFirstPlayerTurn()
+        viewModel.getRandomTurn()
         playerOneScore = 0
         playerTwoScore = 0
         setInitialScores()
