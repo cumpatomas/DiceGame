@@ -1,7 +1,6 @@
 package com.cumpatomas.rolldice.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -34,36 +33,6 @@ class MainActivity : AppCompatActivity() {
         initObservers()
         setInitialScores()
         setInitialRounds()
-        logging("on create")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "On start")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "on resume")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        logging("on pause")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "on stop")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "on destroy")
-    }
-
-    private fun logging(message: String) {
-        Log.d(TAG, message)
     }
 
     private fun initObservers() {
@@ -108,12 +77,17 @@ class MainActivity : AppCompatActivity() {
         binding.btnRestart.setOnClickListener { restartGame() }
     }
 
+    /** In the following function [restartGame], you have to Set the Score back to 0,
+     * the function is already created and ready to use, it only needs one ScoreEvent argument.
+     * Check [restRounds] for more info on how we sent the [RoundsEvent] to [MainActivityViewModel.setRounds].
+     * You also have to restart the Players score back to 0, use the same logic as with setRounds!*/
+
     private fun restartGame() {
         model.getRandomTurn()
-        model.setPlayerOneScore(score = 0)
-        model.setPlayerTwoScore(score = 0)
+        //model.setPlayerOneScore(???)
+        //model.setPlayerTwoScore(score = 0)
         setInitialScores()
-        model.setRounds(rounds = 6)
+        //model.setRounds(rounds = 6)
         setInitialRounds()
         binding.ivWinnerPlayerTwo.isGone = true
         binding.ivWinnerPlayerOne.isGone = true
@@ -150,7 +124,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
                 setPlayerScore(model.randomNumber)
                 togglePlayerTurn(model.playerTurn)
-                restRoundsLeft()
+                restRounds()
                 checkWinner()
             }
 
@@ -198,40 +172,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun restRoundsLeft() {
+    private fun restRounds() {
         if (model.rounds != 0) {
             model.setRounds(RoundsEvent.DecreaseRound)
             binding.tvRoundsLeft.text = resources.getString(R.string.rounds_left, model.rounds.toString())
         }
     }
 
-    /*private fun togglePlayerTurn() {
-        if (playerTurn == 1) {
-            playerTurn = 2
-            binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
-            binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
-            binding.tvPlayer2Turn.isVisible = true
-            binding.tvPlayer1Turn.isGone = true
-        } else {
-            playerTurn = 1
-            binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
-            binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
-            binding.tvPlayer1Turn.isVisible = true
-            binding.tvPlayer2Turn.isGone = true
-        }
-    }*/
 
     private fun setDice(resourceId: Int) {
         binding.ivDice.setImageDrawable(AppCompatResources.getDrawable(this, resourceId))
     }
 
+    /**Here you have to increase both players scores. Remember, you only have to call the
+     *  [MainActivityViewModel] functions, and pass them a ScoreEvent as parameter.*/
     private fun setPlayerScore(randomNumber: Int) {
         if (model.playerTurn == 1) {
-            playerOneScore += randomNumber
-            binding.tvScorePlayerOne.text = resources.getString(R.string.score_placeholder, playerOneScore.toString())
+           // playerOneScore += randomNumber
+            binding.tvScorePlayerOne.text = resources.getString(R.string.score_placeholder, model.playerOneScore.toString())
         } else {
-            playerTwoScore += randomNumber
-            binding.tvScorePlayerTwo.text = resources.getString(R.string.score_placeholder, playerTwoScore.toString())
+            //playerTwoScore += randomNumber
+            binding.tvScorePlayerTwo.text = resources.getString(R.string.score_placeholder, model.playerTwoScore.toString())
         }
     }
 

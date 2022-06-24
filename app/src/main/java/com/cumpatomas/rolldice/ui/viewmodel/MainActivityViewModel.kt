@@ -3,8 +3,7 @@ package com.cumpatomas.rolldice.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cumpatomas.rolldice.R
-import com.cumpatomas.rolldice.domain.AssignFirstPlayerTurnUseCase
-import com.cumpatomas.rolldice.domain.GetRandomDiceNumberUseCase
+import com.cumpatomas.rolldice.manualdi.UseCasesModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -12,8 +11,8 @@ import kotlinx.coroutines.launch
 
 class MainActivityViewModel: ViewModel() {
 
-    private val assignFirstPlayerTurnUseCase = AssignFirstPlayerTurnUseCase()
-    private val getRandomDiceNumberUseCase = GetRandomDiceNumberUseCase()
+    private val assignFirstPlayerTurnUseCase = UseCasesModule.getAssignFirstPlayerTurnUseCase()
+    private val getRandomDiceNumberUseCase = UseCasesModule.getRandomDiceNumberUseCase()
 
     private val _startPlayerTurn = Channel<Int>()
     val startPlayerTurn = _startPlayerTurn.receiveAsFlow()
@@ -51,21 +50,31 @@ class MainActivityViewModel: ViewModel() {
         _playerTurn = turn
     }
 
+    /** [setPlayerOneScore] and [setPlayerTwoScore] both receive a [ScoreEvent] argument.
+     * This argument will help us to determine if the score has to be increased or re-set
+     * when there is a winner.
+     * Check [setRounds] as example.
+     * */
+
     fun setPlayerOneScore(scoreEvent: ScoreEvent) {
+
 
     }
 
     fun setPlayerTwoScore(scoreEvent: ScoreEvent) {
-        _playerTwoScore = score
+
     }
+
+     /** As you can see, [setRounds] is called when you need to either [RoundsEvent.DecreaseRound] to rest a round or
+      * when you need to [RoundsEvent.ResetRounds] for when the game is over. */
 
     fun setRounds(roundsEvent: RoundsEvent) {
         when(roundsEvent) {
             RoundsEvent.DecreaseRound -> {
                 _rounds -= 1
             }
-            is RoundsEvent.SetRounds -> {
-                _rounds = roundsEvent.rounds
+            RoundsEvent.ResetRounds -> {
+                _rounds = 6
             }
         }
     }
@@ -85,11 +94,11 @@ class MainActivityViewModel: ViewModel() {
 
 }
 sealed class RoundsEvent {
-    data class SetRounds(val rounds: Int): RoundsEvent()
+    object ResetRounds: RoundsEvent()
     object DecreaseRound: RoundsEvent()
 }
 
 sealed class ScoreEvent {
     data class IncreaseScore(val score: Int): ScoreEvent()
-    object SetScore: ScoreEvent()
+    object ResetScore: ScoreEvent()
 }
