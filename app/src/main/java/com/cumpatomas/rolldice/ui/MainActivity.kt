@@ -1,6 +1,7 @@
 package com.cumpatomas.rolldice.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -12,19 +13,16 @@ import com.airbnb.lottie.LottieAnimationView
 import com.cumpatomas.rolldice.R
 import com.cumpatomas.rolldice.databinding.ActivityMainBinding
 import com.cumpatomas.rolldice.ui.viewmodel.MainActivityViewModel
+import com.cumpatomas.rolldice.ui.viewmodel.RoundsEvent
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity.kt"
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainActivityViewModel by viewModels()
+    private val model: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
-    private var playerTurn = 0
-    private var playerOneScore = 0
-    private var playerTwoScore = 0
-    private var rounds = 6
-    private var randomNumber = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,30 +34,59 @@ class MainActivity : AppCompatActivity() {
         initObservers()
         setInitialScores()
         setInitialRounds()
+        logging("on create")
+    }
 
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "On start")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "on resume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        logging("on pause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "on stop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "on destroy")
+    }
+
+    private fun logging(message: String) {
+        Log.d(TAG, message)
     }
 
     private fun initObservers() {
         lifecycleScope.launch {
-            viewModel.firstPlayerTurn.collectLatest { turn ->
-                assignFirstPlayerTurn(turn)
+            model.startPlayerTurn.collectLatest { turn ->
+                togglePlayerTurn(turn)
             }
+
         }
     }
 
     private fun setInitialRounds() {
-        binding.tvRoundsLeft.text = resources.getString(R.string.rounds_left, rounds.toString())
+        binding.tvRoundsLeft.text = resources.getString(R.string.rounds_left, model.rounds.toString())
     }
 
     private fun setInitialScores() {
-        binding.tvScorePlayerOne.text = resources.getString(R.string.score_placeholder, playerOneScore.toString())
-        binding.tvScorePlayerTwo.text = resources.getString(R.string.score_placeholder, playerTwoScore.toString())
+        binding.tvScorePlayerOne.text = resources.getString(R.string.score_placeholder, model.playerOneScore.toString())
+        binding.tvScorePlayerTwo.text = resources.getString(R.string.score_placeholder, model.playerTwoScore.toString())
     }
 
-    private fun assignFirstPlayerTurn(turn: Int) {
+    private fun togglePlayerTurn(turn: Int) {
         when(turn) {
             1 -> {
-                playerTurn = 1
                 binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
                 binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
                 binding.tvPlayer1Turn.isVisible = true
@@ -67,13 +94,13 @@ class MainActivity : AppCompatActivity() {
 
             }
             2 -> {
-                playerTurn = 2
                 binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
                 binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
                 binding.tvPlayer2Turn.isVisible = true
                 binding.tvPlayer1Turn.isGone = true
             }
         }
+        model.setPlayerTurn(turn)
     }
 
     private fun initListeners() {
@@ -82,11 +109,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun restartGame() {
-        viewModel.getRandomTurn()
-        playerOneScore = 0
-        playerTwoScore = 0
+        model.getRandomTurn()
+        model.setPlayerOneScore(score = 0)
+        model.setPlayerTwoScore(score = 0)
         setInitialScores()
-        rounds = 5
+        model.setRounds(rounds = 6)
         setInitialRounds()
         binding.ivWinnerPlayerTwo.isGone = true
         binding.ivWinnerPlayerOne.isGone = true
@@ -117,21 +144,12 @@ class MainActivity : AppCompatActivity() {
                 endId: Int,
                 progress: Float
             ) {
-                randomNumber = (1 .. 6).shuffled().random()
-                val resourceId = when(randomNumber) {
-                    1 -> R.drawable.dice_1
-                    2 -> R.drawable.dice_2
-                    3 -> R.drawable.dice_3
-                    4 -> R.drawable.dice_4
-                    5 -> R.drawable.dice_5
-                    else -> R.drawable.dice_6
-                }
-                setDice(resourceId)
+                setDice(model.getRandomNumber())
             }
 
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
-                setPlayerScore(randomNumber)
-                togglePlayerTurn()
+                setPlayerScore(model.randomNumber)
+                togglePlayerTurn(model.playerTurn)
                 restRoundsLeft()
                 checkWinner()
             }
@@ -149,43 +167,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkWinner() {
-        if (rounds == 0) {
-            if (playerOneScore > playerTwoScore) {
-                binding.ivWinnerPlayerOne.isVisible = true
-                binding.ivWinnerPlayerOne.winnerAnimation()
-                binding.confetti.confettiAnimation()
-                binding.tvIntro.text = resources.getString(R.string.player1wins)
-                binding.tvIntro.isVisible = true
+        with(model) {
+            if (rounds == 0) {
+                if (playerOneScore > playerTwoScore) {
+                    binding.ivWinnerPlayerOne.isVisible = true
+                    binding.ivWinnerPlayerOne.winnerAnimation()
+                    binding.confetti.confettiAnimation()
+                    binding.tvIntro.text = resources.getString(R.string.player1wins)
+                    binding.tvIntro.isVisible = true
+                }
+                if (playerTwoScore > playerOneScore) {
+                    binding.ivWinnerPlayerTwo.isVisible = true
+                    binding.ivWinnerPlayerTwo.winnerAnimation()
+                    binding.confetti.confettiAnimation()
+                    binding.tvIntro.text = resources.getString(R.string.player2wins)
+                    binding.tvIntro.isVisible = true
+                }
+                if (playerOneScore == playerTwoScore) {
+                    binding.ivWinnerPlayerOne.isVisible = true
+                    binding.ivWinnerPlayerTwo.isVisible = true
+                    binding.ivWinnerPlayerOne.winnerAnimation()
+                    binding.ivWinnerPlayerTwo.winnerAnimation()
+                    binding.confetti.confettiAnimation()
+                    binding.tvIntro.text = resources.getString(R.string.draw)
+                    binding.tvIntro.isVisible = true
+                }
+                binding.ivDice.isGone = true
+                binding.btnRestart.isVisible = true
             }
-            if (playerTwoScore > playerOneScore) {
-                binding.ivWinnerPlayerTwo.isVisible = true
-                binding.ivWinnerPlayerTwo.winnerAnimation()
-                binding.confetti.confettiAnimation()
-                binding.tvIntro.text = resources.getString(R.string.player2wins)
-                binding.tvIntro.isVisible = true
-            }
-            if (playerOneScore == playerTwoScore) {
-                binding.ivWinnerPlayerOne.isVisible = true
-                binding.ivWinnerPlayerTwo.isVisible = true
-                binding.ivWinnerPlayerOne.winnerAnimation()
-                binding.ivWinnerPlayerTwo.winnerAnimation()
-                binding.confetti.confettiAnimation()
-                binding.tvIntro.text = resources.getString(R.string.draw)
-                binding.tvIntro.isVisible = true
-            }
-            binding.ivDice.isGone = true
-            binding.btnRestart.isVisible = true
         }
     }
 
     private fun restRoundsLeft() {
-        if (rounds != 0) {
-            rounds -= 1
-            binding.tvRoundsLeft.text = resources.getString(R.string.rounds_left, rounds.toString())
+        if (model.rounds != 0) {
+            model.setRounds(RoundsEvent.DecreaseRound)
+            binding.tvRoundsLeft.text = resources.getString(R.string.rounds_left, model.rounds.toString())
         }
     }
 
-    private fun togglePlayerTurn() {
+    /*private fun togglePlayerTurn() {
         if (playerTurn == 1) {
             playerTurn = 2
             binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
@@ -199,14 +219,14 @@ class MainActivity : AppCompatActivity() {
             binding.tvPlayer1Turn.isVisible = true
             binding.tvPlayer2Turn.isGone = true
         }
-    }
+    }*/
 
     private fun setDice(resourceId: Int) {
         binding.ivDice.setImageDrawable(AppCompatResources.getDrawable(this, resourceId))
     }
 
     private fun setPlayerScore(randomNumber: Int) {
-        if (playerTurn == 1) {
+        if (model.playerTurn == 1) {
             playerOneScore += randomNumber
             binding.tvScorePlayerOne.text = resources.getString(R.string.score_placeholder, playerOneScore.toString())
         } else {
