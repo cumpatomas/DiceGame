@@ -48,6 +48,10 @@ class MainActivityViewModel: ViewModel() {
 
     fun setPlayerTurn(turn: Int) {
         _playerTurn = turn
+        when (_playerTurn) {
+            1 -> _playerTurn = 2
+            else -> _playerTurn = 1
+        }
     }
 
     /** [setPlayerOneScore] and [setPlayerTwoScore] both receive a [ScoreEvent] argument.
@@ -58,10 +62,18 @@ class MainActivityViewModel: ViewModel() {
 
     fun setPlayerOneScore(scoreEvent: ScoreEvent) {
 
+    when (scoreEvent) {
+        is ScoreEvent.IncreaseScore -> _playerOneScore += scoreEvent.score // Oh spent too much time figuring out that needed "is" before calling a DATA CLASS
+        ScoreEvent.ResetScore -> _playerOneScore = 0
+    }
 
     }
 
     fun setPlayerTwoScore(scoreEvent: ScoreEvent) {
+        when (scoreEvent) {
+            is ScoreEvent.IncreaseScore -> _playerTwoScore += scoreEvent.score
+            ScoreEvent.ResetScore -> _playerTwoScore = 0
+        }
 
     }
 

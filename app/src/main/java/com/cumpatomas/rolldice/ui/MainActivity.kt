@@ -13,6 +13,7 @@ import com.cumpatomas.rolldice.R
 import com.cumpatomas.rolldice.databinding.ActivityMainBinding
 import com.cumpatomas.rolldice.ui.viewmodel.MainActivityViewModel
 import com.cumpatomas.rolldice.ui.viewmodel.RoundsEvent
+import com.cumpatomas.rolldice.ui.viewmodel.ScoreEvent
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -84,10 +85,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun restartGame() {
         model.getRandomTurn()
-        //model.setPlayerOneScore(???)
-        //model.setPlayerTwoScore(score = 0)
+        model.setPlayerOneScore(ScoreEvent.ResetScore)
+        model.setPlayerTwoScore(ScoreEvent.ResetScore)
         setInitialScores()
-        //model.setRounds(rounds = 6)
+        model.setRounds(RoundsEvent.ResetRounds)
         setInitialRounds()
         binding.ivWinnerPlayerTwo.isGone = true
         binding.ivWinnerPlayerOne.isGone = true
@@ -187,11 +188,11 @@ class MainActivity : AppCompatActivity() {
     /**Here you have to increase both players scores. Remember, you only have to call the
      *  [MainActivityViewModel] functions, and pass them a ScoreEvent as parameter.*/
     private fun setPlayerScore(randomNumber: Int) {
-        if (model.playerTurn == 1) {
-           // playerOneScore += randomNumber
+        if (model.playerTurn == 2) {
+            model.setPlayerOneScore(ScoreEvent.IncreaseScore(randomNumber))
             binding.tvScorePlayerOne.text = resources.getString(R.string.score_placeholder, model.playerOneScore.toString())
         } else {
-            //playerTwoScore += randomNumber
+            model.setPlayerTwoScore(ScoreEvent.IncreaseScore(randomNumber))
             binding.tvScorePlayerTwo.text = resources.getString(R.string.score_placeholder, model.playerTwoScore.toString())
         }
     }
