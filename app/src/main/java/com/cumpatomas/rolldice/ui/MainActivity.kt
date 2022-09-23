@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity.kt"
+
 class MainActivity : AppCompatActivity() {
 
     private val model: MainActivityViewModel by viewModels()
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.hide()
-        setDefaultImage()
+
         initListeners()
         initObservers()
         setInitialScores()
@@ -46,26 +47,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setInitialRounds() {
-        binding.tvRoundsLeft.text = resources.getString(R.string.rounds_left, model.rounds.toString())
+        binding.tvRoundsLeft.text =
+            resources.getString(R.string.rounds_left, model.rounds.toString())
     }
 
     private fun setInitialScores() {
-        binding.tvScorePlayerOne.text = resources.getString(R.string.score_placeholder, model.playerOneScore.toString())
-        binding.tvScorePlayerTwo.text = resources.getString(R.string.score_placeholder, model.playerTwoScore.toString())
+        binding.tvScorePlayerOne.text =
+            resources.getString(R.string.score_placeholder, model.playerOneScore.toString())
+        binding.tvScorePlayerTwo.text =
+            resources.getString(R.string.score_placeholder, model.playerTwoScore.toString())
     }
 
     private fun togglePlayerTurn(turn: Int) {
-        when(turn) {
+        when (turn) {
             1 -> {
-                binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
-                binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
+                binding.playerOneContainer.background =
+                    AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
+                binding.playerTwoContainer.background =
+                    AppCompatResources.getDrawable(this, R.drawable.player_background)
                 binding.tvPlayer1Turn.isVisible = true
                 binding.tvPlayer2Turn.isGone = true
 
             }
             2 -> {
-                binding.playerTwoContainer.background = AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
-                binding.playerOneContainer.background = AppCompatResources.getDrawable(this, R.drawable.player_background)
+                binding.playerTwoContainer.background =
+                    AppCompatResources.getDrawable(this, R.drawable.active_turn_background)
+                binding.playerOneContainer.background =
+                    AppCompatResources.getDrawable(this, R.drawable.player_background)
                 binding.tvPlayer2Turn.isVisible = true
                 binding.tvPlayer1Turn.isGone = true
             }
@@ -176,7 +184,8 @@ class MainActivity : AppCompatActivity() {
     private fun restRounds() {
         if (model.rounds != 0) {
             model.setRounds(RoundsEvent.DecreaseRound)
-            binding.tvRoundsLeft.text = resources.getString(R.string.rounds_left, model.rounds.toString())
+            binding.tvRoundsLeft.text =
+                resources.getString(R.string.rounds_left, model.rounds.toString())
         }
     }
 
@@ -190,17 +199,15 @@ class MainActivity : AppCompatActivity() {
     private fun setPlayerScore(randomNumber: Int) {
         if (model.playerTurn == 2) {
             model.setPlayerOneScore(ScoreEvent.IncreaseScore(randomNumber))
-            binding.tvScorePlayerOne.text = resources.getString(R.string.score_placeholder, model.playerOneScore.toString())
+            binding.tvScorePlayerOne.text =
+                resources.getString(R.string.score_placeholder, model.playerOneScore.toString())
         } else {
             model.setPlayerTwoScore(ScoreEvent.IncreaseScore(randomNumber))
-            binding.tvScorePlayerTwo.text = resources.getString(R.string.score_placeholder, model.playerTwoScore.toString())
+            binding.tvScorePlayerTwo.text =
+                resources.getString(R.string.score_placeholder, model.playerTwoScore.toString())
         }
     }
 
-    private fun setDefaultImage() {
-        val drawable = AppCompatResources.getDrawable(this, R.drawable.dice_1)
-        binding.ivDice.setImageDrawable(drawable)
-    }
 
     private fun LottieAnimationView.winnerAnimation() {
         setAnimation(R.raw.trophy)
