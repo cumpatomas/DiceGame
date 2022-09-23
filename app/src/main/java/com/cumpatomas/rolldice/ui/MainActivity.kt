@@ -208,7 +208,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun LottieAnimationView.winnerAnimation() {
         setAnimation(R.raw.trophy)
         playAnimation()
